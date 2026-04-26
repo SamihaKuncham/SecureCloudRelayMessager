@@ -1,0 +1,74 @@
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+
+### Above combination will ignore all files without extension ###
+
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dont ignore the prime number store
+!prime
+!Dockerfile
+!Makefile
+
+# Terraform / IaC state
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Azure local deployment metadata
+.azure/
+
+# Container/local overrides
+docker-compose.override.yml
+
+# Key material (never commit private keys)
+security/keys/*_priv.pem
+
+# Env variants and local secrets
+.env.*
+!.env.example
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# logfile
+*.log
+
+# Editor/IDE
+# .idea/
+# .vscode/
