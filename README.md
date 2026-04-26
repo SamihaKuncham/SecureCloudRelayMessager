@@ -1,4 +1,4 @@
-# SecureRelayMessager
+# SecureCloudRelayMessager
 
 A secure client–relay–client messaging system implemented in **Go**, designed to provide **mutual authentication**, **end-to-end confidentiality**, **message integrity**, and **forward secrecy** over an untrusted relay using Hashes for encryption.
 
@@ -69,5 +69,4 @@ This project requires Go **1.20**+
 
 ## Potential Improvements
 
-* Expand to more than two clients. Most of the code for this is already present.
 * Use different keys for HMAC and encryption. Currently using the same key for convenience.
