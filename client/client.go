@@ -43,9 +43,10 @@ var Client Clientele
 // Client driver program
 func main() {
 	enableDebug := flag.Bool("debug", false, "enable debug mode")
+	relayURL := flag.String("relay", "ws://localhost:9000/ws", "relay WebSocket URL")
 	flag.Parse()
 
-	initClient(enableDebug)
+	initClient(enableDebug, relayURL)
 
 	// Creating context to sync graceful shutdown
 	Client.ctx, Client.cancelfn = context.WithCancel(context.Background())
@@ -66,7 +67,7 @@ func main() {
 }
 
 // Function to initialize client parameters and setup connections to the relay.
-func initClient(enableDebug *bool) {
+func initClient(enableDebug *bool, relayURL *string) {
 	// Getting the username of the client for initialization
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter client username: ")
@@ -81,7 +82,7 @@ func initClient(enableDebug *bool) {
 
 	// Establish connection to relay
 	var err error
-	Client.conn, _, err = websocket.DefaultDialer.Dial("ws://localhost:9000/ws", nil)
+	Client.conn, _, err = websocket.DefaultDialer.Dial(*relayURL, nil)
 	if err != nil {
 		logger.Panic(err)
 	}
