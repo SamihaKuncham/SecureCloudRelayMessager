@@ -1,16 +1,22 @@
-app = "secure-relay-messager"
-primary_region = "iad"
+# fly.toml app configuration file generated for secure-relay-messager on 2026-04-26T17:51:16-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'secure-relay-messager'
+primary_region = 'iad'
 
 [build]
 
 [http_service]
   internal_port = 9000
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
 [[vm]]
-  memory = "256mb"
-  cpu_kind = "shared"
+  memory = '256mb'
+  cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 256
