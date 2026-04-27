@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"flag"
 	"fmt"
 	"math/big"
 	"os"
 	"os/signal"
 	"securerelaymessager/logger"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -19,13 +16,13 @@ import (
 )
 
 type Clientele struct {
-	conn     *websocket.Conn
-	userId   string
-	peerId   string
-	session  Session
-	ctx      context.Context
-	cancelfn context.CancelFunc
-	writeMu  sync.Mutex
+	conn          *websocket.Conn
+	userId        string
+	peerId        string
+	session       Session
+	ctx           context.Context
+	cancelfn      context.CancelFunc
+	writeMu       sync.Mutex
 	pendingMu     sync.Mutex
 	pendingFrames []string
 }
@@ -40,78 +37,35 @@ type Session struct {
 
 var Client Clientele
 
-// Client driver program
-func main() {
-	enableDebug := flag.Bool("debug", false, "enable debug mode")
-	relayURL := flag.String("relay", "ws://localhost:9000/ws", "relay WebSocket URL")
-	flag.Parse()
-
-	initClient(enableDebug, relayURL)
-
-	// Creating context to sync graceful shutdown
-	Client.ctx, Client.cancelfn = context.WithCancel(context.Background())
-	defer Client.cancelfn()
-
-	// Creating a watchdog for graceful termination incase of relay or client death.
-	go gracefulTermination()
-
-	// Step1: Relay Registration
-	RegisterWithRelay(&Client)
-	ChoosePeerFromConnectedUsers(&Client)
-
-	// Step2: Session Creation
-	CreateClientSession(&Client)
-
-	// Step3: Message Exchange
-	MessageExchange(&Client)
-}
-
-// Function to initialize client parameters and setup connections to the relay.
-func initClient(enableDebug *bool, relayURL *string) {
-	// Getting the username of the client for initialization
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter client username: ")
-	username, _ := reader.ReadString('\n')
+func initClientWithParams(username, relayURL string, debug bool) error {
 	Client.userId = strings.ToLower(strings.TrimSpace(username))
 	if Client.userId == "" {
-		panic("client username cannot be empty")
+		return fmt.Errorf("username cannot be empty")
 	}
+	logger.Init(fmt.Sprintf("client-%s.log", Client.userId), debug)
 
-	// Initializing the logger
-	logger.Init(fmt.Sprintf("client-%s.log", Client.userId), *enableDebug)
-
-	// Establish connection to relay
 	var err error
-	Client.conn, _, err = websocket.DefaultDialer.Dial(*relayURL, nil)
+	Client.conn, _, err = websocket.DefaultDialer.Dial(relayURL, nil)
 	if err != nil {
-		logger.Panic(err)
+		return fmt.Errorf("failed to connect to relay: %w", err)
 	}
+
+	Client.ctx, Client.cancelfn = context.WithCancel(context.Background())
+	go gracefulTermination()
+	return nil
 }
 
-// function to gracefully terminate all threads created on loss of connectivity
 func gracefulTermination() {
-	// Signal channel that notifies when we have a system termination
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-
 	sig := <-sigCh
 	logger.Warn("Got termination signal:", sig)
-	msg := fmt.Sprintf("TERM %s\n", Client.userId)
-
-	// Informing Relay of termination
-	err := Client.sendText(msg)
-	if err != nil {
+	if err := Client.sendText(fmt.Sprintf("TERM %s", Client.userId)); err != nil {
 		logger.Warn("Error writing termination to Relay:", err)
 	}
 	Client.cancelfn()
 	Client.conn.Close()
-
-	// Close stdin to unblock sendMessage's scanner.Scan()
-	logger.Info("closing stdin")
-	if err := os.Stdin.Close(); err != nil {
-		// usually "nil" or "use of closed file" if called twice; safe to ignore
-		logger.Warn("Error closing stdin:", err)
-	}
+	fyneApp.Quit()
 }
 
 func (c *Clientele) sendText(message string) error {
@@ -126,7 +80,6 @@ func (c *Clientele) receiveText() (string, error) {
 	}
 	return c.receiveTextFromConn()
 }
-
 
 func (c *Clientele) receiveTextFromConn() (string, error) {
 	_, payload, err := c.conn.ReadMessage()
@@ -157,48 +110,6 @@ func (c *Clientele) popPendingFrame() (string, bool) {
 	return frame, true
 }
 
-func ChoosePeerFromConnectedUsers(client *Clientele) {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		users, err := fetchConnectedUsers(client)
-		if err != nil {
-			logger.Error("Failed to fetch users list from relay:", err)
-			fmt.Print("Press Enter to retry... ")
-			_, _ = reader.ReadString('\n')
-			continue
-		}
-
-		if len(users) == 0 {
-			fmt.Println("No other connected users are currently available.")
-			fmt.Print("Press Enter to refresh... ")
-			_, _ = reader.ReadString('\n')
-			continue
-		}
-
-		fmt.Println("Connected users:")
-		for i, user := range users {
-			fmt.Printf("%d. %s\n", i+1, user)
-		}
-		fmt.Print("Select peer by number (or type r to refresh): ")
-		selectionRaw, _ := reader.ReadString('\n')
-		selection := strings.ToLower(strings.TrimSpace(selectionRaw))
-
-		if selection == "r" || selection == "" {
-			continue
-		}
-
-		idx, err := strconv.Atoi(selection)
-		if err != nil || idx < 1 || idx > len(users) {
-			fmt.Println("Invalid selection.")
-			continue
-		}
-
-		client.peerId = users[idx-1]
-		logger.Info("Selected peer:", client.peerId)
-		return
-	}
-}
-
 func fetchConnectedUsers(client *Clientele) ([]string, error) {
 	request := fmt.Sprintf("LIST %s", client.userId)
 	if err := client.sendText(request); err != nil {
@@ -206,8 +117,6 @@ func fetchConnectedUsers(client *Clientele) ([]string, error) {
 	}
 
 	for {
-		// While waiting for USERS, read directly from socket so pending async
-		// frames (e.g. INITS) are not re-consumed and re-queued in a loop.
 		response, err := client.receiveTextFromConn()
 		if err != nil {
 			return nil, err
@@ -227,7 +136,6 @@ func fetchConnectedUsers(client *Clientele) ([]string, error) {
 				}
 				users = append(users, trimmed)
 			}
-
 			return users, nil
 		}
 
