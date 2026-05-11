@@ -32,7 +32,8 @@ This project requires Go **1.20**+
 1. Start the relay server:
    `go run ./relay`
 2. Start the client using
-   `go run ./client`
+   `go run ./client` || `go run ./client --relay <RelayURL>`
+   Use the latter if you have hosted your relay.
 3. Enter a client username when prompted.
 4. After registration, the client requests a list of connected users from the relay and shows selectable peers.
 5. Select a peer from the list. Once both clients have selected each other, session setup starts automatically.
@@ -70,3 +71,4 @@ This project requires Go **1.20**+
 ## Potential Improvements
 
 * Use different keys for HMAC and encryption. Currently using the same key for convenience.
+* Create fully parallelized users that can run multiple concurrent sessions. Currently, this is not allowed within the same session.
