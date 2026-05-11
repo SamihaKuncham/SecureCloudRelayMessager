@@ -72,3 +72,6 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Claude Code worktrees
+.claude/

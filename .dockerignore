@@ -1,0 +1,154 @@
+# flyctl launch added from .claude/worktrees/silly-nightingale-2d9401/.gitignore
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+
+# Ignore all
+.claude/worktrees/silly-nightingale-2d9401/**/*
+# Unignore all with extensions
+!.claude/worktrees/silly-nightingale-2d9401/**/*.*
+# Unignore all dirs
+!.claude/worktrees/silly-nightingale-2d9401/**/*
+
+### Above combination will ignore all files without extension ###
+
+
+# Binaries for programs and plugins
+.claude/worktrees/silly-nightingale-2d9401/**/*.exe
+.claude/worktrees/silly-nightingale-2d9401/**/*.exe~
+.claude/worktrees/silly-nightingale-2d9401/**/*.dll
+.claude/worktrees/silly-nightingale-2d9401/**/*.so
+.claude/worktrees/silly-nightingale-2d9401/**/*.dylib
+
+# Dont ignore the prime number store
+!.claude/worktrees/silly-nightingale-2d9401/**/prime
+!.claude/worktrees/silly-nightingale-2d9401/**/Dockerfile
+!.claude/worktrees/silly-nightingale-2d9401/**/Makefile
+
+# Terraform / IaC state
+.claude/worktrees/silly-nightingale-2d9401/**/.terraform
+.claude/worktrees/silly-nightingale-2d9401/**/*.tfstate
+.claude/worktrees/silly-nightingale-2d9401/**/*.tfstate.*
+.claude/worktrees/silly-nightingale-2d9401/**/crash.log
+.claude/worktrees/silly-nightingale-2d9401/**/override.tf
+.claude/worktrees/silly-nightingale-2d9401/**/override.tf.json
+.claude/worktrees/silly-nightingale-2d9401/**/*_override.tf
+.claude/worktrees/silly-nightingale-2d9401/**/*_override.tf.json
+
+# Azure local deployment metadata
+.claude/worktrees/silly-nightingale-2d9401/**/.azure
+
+# Container/local overrides
+.claude/worktrees/silly-nightingale-2d9401/**/docker-compose.override.yml
+
+# Key material (never commit private keys)
+.claude/worktrees/silly-nightingale-2d9401/**/security/keys/*_priv.pem
+
+# Env variants and local secrets
+.claude/worktrees/silly-nightingale-2d9401/**/.env.*
+!.claude/worktrees/silly-nightingale-2d9401/**/.env.example
+
+# Test binary, built with `go test -c`
+.claude/worktrees/silly-nightingale-2d9401/**/*.test
+
+# Code coverage profiles and other test artifacts
+.claude/worktrees/silly-nightingale-2d9401/**/*.out
+.claude/worktrees/silly-nightingale-2d9401/**/coverage.*
+.claude/worktrees/silly-nightingale-2d9401/**/*.coverprofile
+.claude/worktrees/silly-nightingale-2d9401/**/profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+.claude/worktrees/silly-nightingale-2d9401/**/go.work
+.claude/worktrees/silly-nightingale-2d9401/**/go.work.sum
+
+# env file
+.claude/worktrees/silly-nightingale-2d9401/**/.env
+
+# logfile
+.claude/worktrees/silly-nightingale-2d9401/**/*.log
+
+# Editor/IDE
+# .idea/
+# .vscode/
+
+# flyctl launch added from .gitignore
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+
+# Ignore all
+**/*
+# Unignore all with extensions
+!**/*.*
+# Unignore all dirs
+!**/*
+
+### Above combination will ignore all files without extension ###
+
+
+# Binaries for programs and plugins
+**/*.exe
+**/*.exe~
+**/*.dll
+**/*.so
+**/*.dylib
+
+# Dont ignore the prime number store
+!**/prime
+!**/Dockerfile
+!**/Makefile
+
+# Terraform / IaC state
+**/.terraform
+**/*.tfstate
+**/*.tfstate.*
+**/crash.log
+**/override.tf
+**/override.tf.json
+**/*_override.tf
+**/*_override.tf.json
+
+# Azure local deployment metadata
+**/.azure
+
+# Container/local overrides
+**/docker-compose.override.yml
+
+# Key material (never commit private keys)
+**/security/keys/*_priv.pem
+# Allow relay private key into Docker image for deployment
+!security/keys/relay_priv.pem
+
+# Env variants and local secrets
+**/.env.*
+!**/.env.example
+
+# Test binary, built with `go test -c`
+**/*.test
+
+# Code coverage profiles and other test artifacts
+**/*.out
+**/coverage.*
+**/*.coverprofile
+**/profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+**/go.work
+**/go.work.sum
+
+# env file
+**/.env
+
+# logfile
+**/*.log
+
+# Editor/IDE
+# .idea/
+# .vscode/
+fly.toml
